@@ -1,41 +1,47 @@
 # ITUE301: Advanced Web Development Frameworks - Practicals
 
-This repository contains the practical assignments for the course **ITUE301 - Advanced Web Development Frameworks**, built with React and Vite.
+This repository contains the practical assignments for **ITUE301 - Advanced Web Development Frameworks**, organized into separate folders for each practical exercise.
 
 ---
 
-## 📚 Practical Documentation Index
+## 📂 Practicals Folder Structure
 
-| Practical | Description | Readme Link |
-| :--- | :--- | :--- |
-| **Practical 1** | Portfolio Component Architecture & Design System | 📖 [Practical 1 Readme](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical1_README.md) |
-| **Practical 2** | Interactive SPA, State Management (`useState`) & Routing | 📖 [Practical 2 Readme](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical2_README.md) |
-| **Practical 3** | Asynchronous GitHub REST API Integration (`useEffect`, Spinner, Error Handling) | 📖 [Practical 3 Readme](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical3_README.md) |
-
----
-
-## 🛠️ Getting Started
-
-### Prerequisites
-- Node.js (v18+)
-- npm or yarn
-
-### Installation
-```bash
-# Install dependencies
-npm install
-
-# Start local development server
-npm run dev
-
-# Build for production
-npm run build
+```
+Practicals/
+├── Practical1/     → Practical 1: Portfolio Component Architecture & Design System
+├── Practical2/     → Practical 2: Interactive SPA, State Management (useState) & Routing
+└── Practical3/     → Practical 3: Asynchronous REST API Integration (useEffect, Spinner, Error Handling)
 ```
 
 ---
 
-## 💻 Tech Stack
-- **Framework**: React 19 + Vite
-- **Routing**: React Router DOM v7
-- **Styling**: Custom Vanilla CSS (CSS Modules / Custom Tokens)
-- **Code Quality**: Oxlint
+## 📚 Practical Documentation & Directories
+
+| Practical Folder | Description | Readme Link |
+| :--- | :--- | :--- |
+| **[📁 Practical1](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical1)** | Portfolio Component Architecture & CSS Design System | 📖 [Practical1 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical1/README.md) |
+| **[📁 Practical2](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical2)** | Interactive SPA, Routing (`react-router-dom`), Category Filter & Form Preview | 📖 [Practical2 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical2/README.md) |
+| **[📁 Practical3](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical3)** | GitHub REST API Integration (`useEffect`, `useState`, `<Spinner />`, `<ErrorMessage />`, `<RepoList />`) | 📖 [Practical3 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical3/README.md) |
+
+---
+
+## 🛠️ How to Run Any Practical
+
+Navigate into any practical folder and start the dev server:
+
+```bash
+# To run Practical 1
+cd Practical1
+npm install
+npm run dev
+
+# To run Practical 2
+cd Practical2
+npm install
+npm run dev
+
+# To run Practical 3
+cd Practical3
+npm install
+npm run dev
+```
