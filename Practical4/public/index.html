@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical 4 - Task Manager API & Middleware Tester</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --accent-purple: #8b5cf6;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-orange: #f59e0b;
+      --accent-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .badge-tag {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: #c084fc;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #60a5fa, #c084fc, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Pipeline Diagram */
+    .pipeline-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .pipeline-card h3 {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pipeline-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .step-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.85rem;
+      border-radius: 0.65rem;
+      text-align: center;
+      font-size: 0.85rem;
+      position: relative;
+    }
+
+    .step-box strong {
+      display: block;
+      color: #60a5fa;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Main Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      padding: 0.6rem 1.1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: white;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-get { background: var(--accent-blue); }
+    .btn-post { background: var(--accent-green); }
+    .btn-put { background: var(--accent-orange); }
+    .btn-delete { background: var(--accent-red); }
+    .btn-purple { background: var(--accent-purple); }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+      font-weight: 500;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-purple);
+    }
+
+    /* Response Console */
+    .res-meta {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .status-badge {
+      padding: 0.3rem 0.75rem;
+      border-radius: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .status-200, .status-201 { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .status-400, .status-404, .status-415 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .status-500 { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+    pre {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 0.65rem;
+      padding: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #a5f3fc;
+      overflow-x: auto;
+      max-height: 400px;
+    }
+
+    /* Tasks List View */
+    .task-item {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 0.85rem 1rem;
+      border-radius: 0.6rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .task-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .chip {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.3rem;
+      font-weight: 600;
+    }
+    .chip-done { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .chip-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <span class="badge-tag">ITUE301 • Practical 4</span>
+      <h1>Task Manager REST API</h1>
+      <p class="subtitle">Interactive Express Middleware Pipeline & Endpoint Dashboard</p>
+    </header>
+
+    <!-- Middleware Architecture -->
+    <div class="pipeline-card">
+      <h3>⚡ Express Middleware Pipeline Flow</h3>
+      <div class="pipeline-steps">
+        <div class="step-box">
+          <strong>1. Logger</strong>
+          Logs method, URL & timestamp
+        </div>
+        <div class="step-box">
+          <strong>2. Header Check</strong>
+          Enforces application/json
+        </div>
+        <div class="step-box">
+          <strong>3. JSON Parser</strong>
+          Parses req.body
+        </div>
+        <div class="step-box">
+          <strong>4. Task Router</strong>
+          ID Validation & Controllers
+        </div>
+        <div class="step-box">
+          <strong>5. 404 Handler</strong>
+          Catches unknown routes
+        </div>
+        <div class="step-box">
+          <strong>6. Global Error</strong>
+          Catches 500 exceptions
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Controls Column -->
+      <div>
+        <div class="card">
+          <div class="card-title">
+            <span>🚀 Quick Actions & Preset Tests</span>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn-get" onclick="fetchTasks()">GET /tasks</button>
+            <button class="btn-get" onclick="fetchTaskById(1)">GET /tasks/1</button>
+            <button class="btn-post" onclick="createSampleTask()">POST Create Task</button>
+            <button class="btn-put" onclick="updateSampleTask(1)">PUT Update Task #1</button>
+            <button class="btn-delete" onclick="deleteTask(1)">DELETE Task #1</button>
+          </div>
+
+          <div class="card-title" style="margin-top: 1.5rem;">
+            <span>⚠️ Test Middleware & Error Handlers</span>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn-purple" onclick="testInvalidId()">400 Invalid ID (/tasks/abc)</button>
+            <button class="btn-purple" onclick="testMissingHeader()">415 Missing Header</button>
+            <button class="btn-purple" onclick="testNotFound()">404 Undefined Route</button>
+            <button class="btn-purple" onclick="testServerError()">500 Server Exception</button>
+          </div>
+
+          <!-- Custom Task Creation Form -->
+          <div class="card-title" style="margin-top: 1.5rem;">
+            <span>📝 Custom Task Creator</span>
+          </div>
+          <form onsubmit="handleFormSubmit(event)">
+            <div class="form-group">
+              <label>Task Title *</label>
+              <input type="text" id="taskTitle" placeholder="e.g. Build Express REST API" required />
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" id="taskDesc" placeholder="e.g. Complete practical assignment" />
+            </div>
+            <button type="submit" class="btn-post" style="width: 100%; justify-content: center;">
+              Create Task (201 Created)
+            </button>
+          </form>
+        </div>
+
+        <!-- Live Task List Display -->
+        <div class="card" style="margin-top: 1.5rem;">
+          <div class="card-title">
+            <span>📋 Live Tasks Array</span>
+            <button class="btn-get" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;" onclick="fetchTasks()">Refresh</button>
+          </div>
+          <div id="taskListContainer">Loading tasks...</div>
+        </div>
+      </div>
+
+      <!-- Response Console Column -->
+      <div>
+        <div class="card">
+          <div class="card-title">
+            <span>📡 HTTP Response Console</span>
+          </div>
+          <div class="res-meta">
+            <div id="statusBadge" class="status-badge status-200">200 OK</div>
+            <span id="resTime" style="font-size: 0.85rem; color: var(--text-muted);">0 ms</span>
+          </div>
+          <pre id="jsonOutput">// Click any button on the left to test endpoints...</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const jsonOutput = document.getElementById('jsonOutput');
+    const statusBadge = document.getElementById('statusBadge');
+    const resTime = document.getElementById('resTime');
+    const taskListContainer = document.getElementById('taskListContainer');
+
+    async function sendRequest(url, method = 'GET', body = null, headers = {}) {
+      const startTime = performance.now();
+      jsonOutput.textContent = '// Sending request...';
+
+      const defaultHeaders = {
+        'Content-Type': 'application/json',
+        ...headers
+      };
+
+      const options = {
+        method,
+        headers: defaultHeaders
+      };
+
+      if (body) {
+        options.body = typeof body === 'string' ? body : JSON.stringify(body);
+      }
+
+      try {
+        const res = await fetch(url, options);
+        const duration = Math.round(performance.now() - startTime);
+        const data = await res.json().catch(() => ({ message: "Non-JSON response received" }));
+
+        // Update badge
+        statusBadge.textContent = `${res.status} ${res.statusText || ''}`;
+        statusBadge.className = `status-badge status-${res.status}`;
+        resTime.textContent = `${duration} ms`;
+
+        jsonOutput.textContent = JSON.stringify(data, null, 2);
+
+        // Refresh task list if modified
+        if (['POST', 'PUT', 'DELETE'].includes(method) || url === '/tasks') {
+          renderTaskList();
+        }
+      } catch (err) {
+        statusBadge.textContent = 'ERROR';
+        statusBadge.className = 'status-badge status-500';
+        jsonOutput.textContent = JSON.stringify({ error: err.message }, null, 2);
+      }
+    }
+
+    function fetchTasks() {
+      sendRequest('/tasks');
+    }
+
+    function fetchTaskById(id) {
+      sendRequest(`/tasks/${id}`);
+    }
+
+    function createSampleTask() {
+      sendRequest('/tasks', 'POST', {
+        title: 'New Dynamic Task ' + Math.floor(Math.random() * 100),
+        description: 'Created via visual API dashboard button',
+        completed: false
+      });
+    }
+
+    function updateSampleTask(id) {
+      sendRequest(`/tasks/${id}`, 'PUT', {
+        title: 'Updated Task #' + id,
+        completed: true
+      });
+    }
+
+    function deleteTask(id) {
+      sendRequest(`/tasks/${id}`, 'DELETE');
+    }
+
+    function testInvalidId() {
+      sendRequest('/tasks/abc');
+    }
+
+    function testMissingHeader() {
+      // Intentionally omit Content-Type header
+      sendRequest('/tasks', 'POST', JSON.stringify({ title: "No Header Test" }), { 'Content-Type': 'text/plain' });
+    }
+
+    function testNotFound() {
+      sendRequest('/non-existent-route-path');
+    }
+
+    function testServerError() {
+      sendRequest('/tasks/trigger-error');
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('taskTitle').value;
+      const description = document.getElementById('taskDesc').value;
+      sendRequest('/tasks', 'POST', { title, description });
+      document.getElementById('taskTitle').value = '';
+      document.getElementById('taskDesc').value = '';
+    }
+
+    async function renderTaskList() {
+      try {
+        const res = await fetch('/tasks');
+        const result = await res.json();
+        if (result.data && Array.isArray(result.data)) {
+          if (result.data.length === 0) {
+            taskListContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem;">No tasks remaining.</div>';
+            return;
+          }
+          taskListContainer.innerHTML = result.data.map(task => `
+            <div class="task-item">
+              <div>
+                <div class="task-title">#${task.id} ${task.title}</div>
+                <div class="task-desc">${task.description || 'No description'}</div>
+              </div>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <span class="chip ${task.completed ? 'chip-done' : 'chip-pending'}">
+                  ${task.completed ? 'Completed' : 'Pending'}
+                </span>
+                <button class="btn-delete" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="deleteTask(${task.id})">✕</button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        taskListContainer.innerHTML = '<div style="color: var(--accent-red);">Failed to load task list.</div>';
+      }
+    }
+
+    // Initial load
+    fetchTasks();
+  </script>
+</body>
+</html>

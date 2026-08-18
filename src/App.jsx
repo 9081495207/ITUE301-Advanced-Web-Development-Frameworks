@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
+import NotFound from './pages/NotFound';
 import Footer from './components/Footer';
 
 /**
@@ -13,6 +14,7 @@ import Footer from './components/Footer';
  * "/" -> Home
  * "/projects" -> Projects
  * "/contact" -> Contact
+ * "*" -> NotFound (404 Error Page)
  */
 function App() {
   // Theme state management (Light & Dark mode)
@@ -100,6 +102,7 @@ function App() {
             />
             <Route path="/projects" element={<Projects />} />
             <Route path="/contact" element={<Contact contactData={contactData} />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
 

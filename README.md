@@ -10,7 +10,8 @@ This repository contains the practical assignments for **ITUE301 - Advanced Web 
 Practicals/
 ├── Practical1/     → Practical 1: Portfolio Component Architecture & Design System
 ├── Practical2/     → Practical 2: Interactive SPA, State Management (useState) & Routing
-└── Practical3/     → Practical 3: Asynchronous REST API Integration (useEffect, Spinner, Error Handling)
+├── Practical3/     → Practical 3: Asynchronous REST API Integration (useEffect, Spinner, Error Handling)
+└── Practical4/     → Practical 4: Express REST API Task Manager & Custom Middleware Pipeline
 ```
 
 ---
@@ -22,6 +23,7 @@ Practicals/
 | **[📁 Practical1](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical1)** | Portfolio Component Architecture & CSS Design System | 📖 [Practical1 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical1/README.md) |
 | **[📁 Practical2](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical2)** | Interactive SPA, Routing (`react-router-dom`), Category Filter & Form Preview | 📖 [Practical2 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical2/README.md) |
 | **[📁 Practical3](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical3)** | GitHub REST API Integration (`useEffect`, `useState`, `<Spinner />`, `<ErrorMessage />`, `<RepoList />`) | 📖 [Practical3 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical3/README.md) |
+| **[📁 Practical4](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical4)** | RESTful Task API (Express, CRUD, Request Logger, Header Check, ID Validator, 404 & Global 500 Handler) | 📖 [Practical4 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical4/README.md) |
 
 ---
 
@@ -44,4 +46,10 @@ npm run dev
 cd Practical3
 npm install
 npm run dev
+
+# To run Practical 4
+cd Practical4
+npm install
+npm start   # Starts server at http://localhost:5000 with visual API dashboard
+npm test    # Runs automated integration test suite
 ```

@@ -2,13 +2,18 @@ import React from 'react';
 
 /**
  * RepoList Component
- * Renders the fetched list of GitHub repositories with name, URL, description, stars, and details.
+ * Renders the list of GitHub repositories with star count alongside the name,
+ * description, language, forks, and links.
  */
-function RepoList({ data }) {
+function RepoList({ data, searchQuery = '' }) {
   if (!data || data.length === 0) {
     return (
       <div className="empty-repos">
-        <p>No public repositories found for this account.</p>
+        <p>
+          {searchQuery
+            ? `No repositories found matching "${searchQuery}".`
+            : 'No public repositories found for this account.'}
+        </p>
       </div>
     );
   }
@@ -20,6 +25,9 @@ function RepoList({ data }) {
           <div className="repo-card-header">
             <h3 className="repo-name">
               <span className="repo-icon">📦</span> {repo.name}
+              <span className="repo-stars-badge" title={`${repo.stargazers_count ?? 0} stars`}>
+                ⭐ {repo.stargazers_count ?? 0}
+              </span>
             </h3>
             {repo.private ? (
               <span className="repo-badge private">Private</span>
@@ -38,11 +46,8 @@ function RepoList({ data }) {
                 <span className="language-dot"></span> {repo.language}
               </span>
             )}
-            {repo.stargazers_count !== undefined && (
-              <span className="repo-meta-item">⭐ {repo.stargazers_count}</span>
-            )}
             {repo.forks_count !== undefined && (
-              <span className="repo-meta-item">🍴 {repo.forks_count}</span>
+              <span className="repo-meta-item">🍴 {repo.forks_count} forks</span>
             )}
           </div>
 
@@ -53,7 +58,7 @@ function RepoList({ data }) {
               rel="noopener noreferrer"
               className="project-link primary"
             >
-              🔗 View Repository ({repo.html_url})
+              🔗 View Repository
             </a>
           </div>
         </div>
