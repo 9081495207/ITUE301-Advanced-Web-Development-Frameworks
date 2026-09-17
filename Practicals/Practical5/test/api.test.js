@@ -124,13 +124,48 @@ test('Practical 5 API - Mongoose & MongoDB Integration Test Suite', async (t) =>
     assert.equal(res.body.error, 'Invalid ID Format');
   });
 
-  await t.test('GET /tasks/:id - Should return 404 Not Found for non-existent MongoDB ObjectId', async () => {
+  await t.test('POST /tasks - Pre-save hook should automatically trim whitespace from title', async () => {
+    const payload = {
+      title: '   Trimmed Title Test   ',
+      description: 'Testing pre-save hook trimming',
+      priority: 'high'
+    };
+
+    const res = await httpRequest(`${baseUrl}/tasks`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }, payload);
+
+    assert.equal(res.status, 201);
+    assert.equal(res.body.data.title, 'Trimmed Title Test', 'Title should be automatically trimmed by pre-save hook');
+    assert.equal(res.body.data.priority, 'high', 'Priority should match enum value');
+  });
+
+  await t.test('POST /tasks - Should reject invalid priority value not in enum', async () => {
+    const payload = {
+      title: 'Invalid Priority Task',
+      priority: 'super_urgent'
+    };
+
+    const res = await httpRequest(`${baseUrl}/tasks`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }, payload);
+
+    assert.equal(res.status, 400);
+    assert.equal(res.body.status, 400);
+    assert.equal(res.body.error, 'Validation Error');
+    assert.ok(res.body.message.includes('Priority'), 'Error message should indicate invalid priority enum');
+  });
+
+  await t.test('GET /tasks/:id - Should return a 404 JSON response if the ID does not exist', async () => {
     const nonExistentId = '507f1f77bcf86cd799439011'; // Valid 24-hex string, but not in DB
     const res = await httpRequest(`${baseUrl}/tasks/${nonExistentId}`, { method: 'GET' });
 
     assert.equal(res.status, 404);
     assert.equal(res.body.status, 404);
     assert.equal(res.body.error, 'Not Found');
+    assert.ok(res.body.message.includes(nonExistentId), '404 JSON response message should reference requested ID');
   });
 
   await t.test('PUT /tasks/:id - Should update an existing task in MongoDB', async () => {

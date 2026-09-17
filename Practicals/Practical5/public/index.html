@@ -352,6 +352,15 @@
             <textarea id="description" placeholder="Add optional details..."></textarea>
           </div>
 
+          <div class="form-group">
+            <label for="priority">Priority Enum <span style="color: var(--text-muted);">(low, medium, high)</span></label>
+            <select id="priority" style="width: 100%; padding: 0.75rem 1rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 0.5rem; color: var(--text-main); font-family: inherit;">
+              <option value="medium">Medium (Default)</option>
+              <option value="low">Low</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
           <label class="checkbox-group">
             <input type="checkbox" id="completed">
             <span>Mark as Completed</span>
@@ -417,12 +426,15 @@
       listContainer.innerHTML = tasks.map(task => `
         <div class="task-item">
           <div class="task-info">
-            <h4>${escapeHtml(task.title)} <span class="status-badge ${task.completed ? 'status-completed' : 'status-pending'}">${task.completed ? 'Completed' : 'Pending'}</span></h4>
+            <h4>${escapeHtml(task.title)} 
+              <span class="status-badge ${task.completed ? 'status-completed' : 'status-pending'}">${task.completed ? 'Completed' : 'Pending'}</span>
+              <span class="status-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; text-transform: uppercase;">${task.priority || 'medium'}</span>
+            </h4>
             <p>${task.description ? escapeHtml(task.description) : '<em>No description provided</em>'}</p>
             <div class="task-meta">ID: ${task._id} | Created: ${new Date(task.createdAt).toLocaleTimeString()}</div>
           </div>
           <div class="task-actions">
-            <button class="btn-secondary" onclick="editTask('${task._id}', '${escapeQuote(task.title)}', '${escapeQuote(task.description || '')}', ${task.completed})">Edit</button>
+            <button class="btn-secondary" onclick="editTask('${task._id}', '${escapeQuote(task.title)}', '${escapeQuote(task.description || '')}', ${task.completed}, '${task.priority || 'medium'}')">Edit</button>
             <button class="btn-danger" onclick="deleteTask('${task._id}')">Delete</button>
           </div>
         </div>
@@ -434,9 +446,10 @@
       const id = document.getElementById('task-id').value;
       const title = document.getElementById('title').value;
       const description = document.getElementById('description').value;
+      const priority = document.getElementById('priority').value;
       const completed = document.getElementById('completed').checked;
 
-      const payload = { title, description, completed };
+      const payload = { title, description, priority, completed };
       const method = id ? 'PUT' : 'POST';
       const url = id ? `${API_BASE}/${id}` : API_BASE;
 
@@ -496,10 +509,11 @@
       }
     }
 
-    function editTask(id, title, description, completed) {
+    function editTask(id, title, description, completed, priority = 'medium') {
       document.getElementById('task-id').value = id;
       document.getElementById('title').value = title;
       document.getElementById('description').value = description;
+      document.getElementById('priority').value = priority;
       document.getElementById('completed').checked = completed;
       document.getElementById('form-heading').innerText = 'Edit Task (MongoDB)';
       document.getElementById('submit-btn').innerText = 'Update Task';

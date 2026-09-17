@@ -47,13 +47,14 @@ const getTaskById = async (req, res, next) => {
  */
 const createTask = async (req, res, next) => {
   try {
-    const { title, description, completed } = req.body || {};
+    const { title, description, completed, priority } = req.body || {};
 
-    // Mongoose Task.create will execute schema validations automatically
+    // Mongoose Task.create will execute pre-save hooks and schema validations automatically
     const newTask = await Task.create({
       title,
       description,
-      completed
+      completed,
+      priority
     });
 
     res.status(201).json({
@@ -72,12 +73,13 @@ const createTask = async (req, res, next) => {
  */
 const updateTask = async (req, res, next) => {
   try {
-    const { title, description, completed } = req.body || {};
+    const { title, description, completed, priority } = req.body || {};
 
     const updateFields = {};
-    if (title !== undefined) updateFields.title = title;
+    if (title !== undefined) updateFields.title = typeof title === 'string' ? title.trim() : title;
     if (description !== undefined) updateFields.description = description;
     if (completed !== undefined) updateFields.completed = completed;
+    if (priority !== undefined) updateFields.priority = priority;
 
     const updatedTask = await Task.findByIdAndUpdate(
       req.taskId,

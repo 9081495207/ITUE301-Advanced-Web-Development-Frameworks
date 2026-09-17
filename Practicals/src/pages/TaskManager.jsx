@@ -24,6 +24,7 @@ function TaskManager() {
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState('medium');
   const [completed, setCompleted] = useState(false);
   const [formError, setFormError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -58,7 +59,7 @@ function TaskManager() {
     setFormError(null);
     setSubmitting(true);
 
-    const payload = { title, description, completed };
+    const payload = { title, description, priority, completed };
     const method = editingId ? 'PUT' : 'POST';
     const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
 
@@ -119,6 +120,7 @@ function TaskManager() {
     setEditingId(task._id);
     setTitle(task.title);
     setDescription(task.description || '');
+    setPriority(task.priority || 'medium');
     setCompleted(task.completed);
     setFormError(null);
   };
@@ -128,6 +130,7 @@ function TaskManager() {
     setEditingId(null);
     setTitle('');
     setDescription('');
+    setPriority('medium');
     setCompleted(false);
     setFormError(null);
   };
@@ -166,7 +169,7 @@ function TaskManager() {
           )}
 
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-muted)' }}>Title *</label>
                 <input
@@ -189,6 +192,20 @@ function TaskManager() {
                   className="username-input"
                   style={{ width: '100%' }}
                 />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-muted)' }}>Priority Enum</label>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  className="username-input"
+                  style={{ width: '100%' }}
+                >
+                  <option value="medium">Medium (Default)</option>
+                  <option value="low">Low</option>
+                  <option value="high">High</option>
+                </select>
               </div>
             </div>
 
