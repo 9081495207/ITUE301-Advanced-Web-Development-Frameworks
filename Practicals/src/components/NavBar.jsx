@@ -31,6 +31,12 @@ function NavBar({ theme, toggleTheme }) {
               Projects
             </NavLink>
             <NavLink
+              to="/tasks"
+              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+            >
+              Task Manager (MongoDB)
+            </NavLink>
+            <NavLink
               to="/contact"
               className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
             >

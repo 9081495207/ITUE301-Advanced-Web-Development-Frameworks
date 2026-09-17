@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import Projects from './pages/Projects';
+import TaskManager from './pages/TaskManager';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 import Footer from './components/Footer';
@@ -101,6 +102,7 @@ function App() {
               }
             />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/tasks" element={<TaskManager />} />
             <Route path="/contact" element={<Contact contactData={contactData} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
