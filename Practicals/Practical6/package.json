@@ -1,0 +1,31 @@
+{
+  "name": "practical6-fullstack-task-api",
+  "version": "1.0.0",
+  "description": "Full Stack Integration React + Node + MongoDB - Practical 6",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test/api.test.js"
+  },
+  "keywords": [
+    "express",
+    "cors",
+    "mongoose",
+    "mongodb",
+    "fullstack",
+    "react",
+    "rest-api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.0"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^9.2.0"
+  }
+}

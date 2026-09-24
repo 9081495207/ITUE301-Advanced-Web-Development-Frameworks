@@ -31,6 +31,12 @@ function NavBar({ theme, toggleTheme }) {
               Projects
             </NavLink>
             <NavLink
+              to="/tasks"
+              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+            >
+              Tasks (Practical 6)
+            </NavLink>
+            <NavLink
               to="/contact"
               className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
             >
