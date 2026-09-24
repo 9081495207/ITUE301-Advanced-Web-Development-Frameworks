@@ -55,6 +55,7 @@ if (require.main === module) {
       await connectDB();
 
       const serverInstance = app.listen(portToUse, () => {
+        console.log(`Server running on port ${portToUse}.`);
         console.log(`===================================================`);
         console.log(`🚀 Practical 5: Task API (Mongoose & MongoDB) running on port ${portToUse}`);
         console.log(`🌐 Visual API Dashboard: http://localhost:${portToUse}`);

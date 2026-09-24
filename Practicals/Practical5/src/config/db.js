@@ -15,6 +15,7 @@ const connectDB = async () => {
     try {
       // Set connection timeout to 3 seconds for quick fallback check if local daemon is down
       const conn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 3000 });
+      console.log('MongoDB connected');
       console.log(`🍃 Connected to MongoDB: ${conn.connection.host}/${conn.connection.name}`);
       return conn;
     } catch (err) {
@@ -29,6 +30,7 @@ const connectDB = async () => {
     mongoMemoryServer = await MongoMemoryServer.create();
     const memoryUri = mongoMemoryServer.getUri();
     const conn = await mongoose.connect(memoryUri);
+    console.log('MongoDB connected');
     console.log(`⚡ Connected to In-Memory MongoDB Server: ${memoryUri}`);
     return conn;
   } catch (err) {
