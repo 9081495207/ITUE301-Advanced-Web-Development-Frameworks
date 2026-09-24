@@ -34,7 +34,7 @@ function NavBar({ theme, toggleTheme }) {
               to="/tasks"
               className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
             >
-              Tasks (Practical 6)
+              Task Manager
             </NavLink>
             <NavLink
               to="/contact"

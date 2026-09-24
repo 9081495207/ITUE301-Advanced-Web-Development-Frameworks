@@ -167,7 +167,7 @@ function TaskManager() {
     <div className="page-wrapper">
       <section className="section-card">
         <h2 className="section-title">
-          <span className="title-icon">🍃</span> Full-Stack Task Manager (Practical 6)
+          <span className="title-icon">🍃</span> Task Manager (MongoDB)
         </h2>
 
         <p style={{ marginBottom: '15px' }}>
