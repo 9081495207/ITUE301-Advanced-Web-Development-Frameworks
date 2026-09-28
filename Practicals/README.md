@@ -13,7 +13,9 @@ Practicals/
 ├── Practical3/     → Practical 3: Asynchronous REST API Integration (useEffect, Spinner, Error Handling)
 ├── Practical4/     → Practical 4: Express REST API Task Manager & Custom Middleware Pipeline
 ├── Practical5/     → Practical 5: MongoDB Integration and Schema Design with Mongoose
-└── Practical6/     → Practical 6: Full Stack Integration (React + Node + MongoDB)
+├── Practical6/     → Practical 6: Full Stack Integration (React + Node + MongoDB)
+├── Practical7/     → Practical 7: Authentication & Middleware Pipeline (JWT, bcrypt, Protected Routes)
+└── Practical8/     → Practical 8: Performance Optimization & Lazy Loading in React (Code Splitting, Suspense)
 ```
 
 ---
@@ -28,6 +30,9 @@ Practicals/
 | **[📁 Practical4](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical4)** | RESTful Task API (Express, CRUD, Request Logger, Header Check, ID Validator, 404 & Global 500 Handler) | 📖 [Practical4 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical4/README.md) |
 | **[📁 Practical5](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical5)** | Task API with MongoDB & Mongoose Schema Validation (Mongoose ODM, Schema Constraints, Async Controllers, Structured Error JSON) | 📖 [Practical5 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical5/README.md) |
 | **[📁 Practical6](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical6)** | Full Stack Integration React + Node + MongoDB (Central `api.js`, CORS, Optimistic UI Updates, Confirm Dialog, Toast Alerts) | 📖 [Practical6 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical6/README.md) |
+| **[📁 Practical7](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical7)** | Authentication & Middleware Pipeline (JWT Authorization `Bearer <token>`, Password Hashing `bcryptjs`, Server-Side Input Validation, `/auth/me` Profile Endpoint) | 📖 [Practical7 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical7/README.md) |
+| **[📁 Practical8](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical8)** | Performance Optimization & Lazy Loading in React (`React.lazy()`, `<Suspense>`, Minimum Delay Fallback `lazyWithMinDelay`, Heavy Component Chunking) | 📖 [Practical8 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical8/README.md) |
+
 
 ---
 
@@ -36,39 +41,12 @@ Practicals/
 Navigate into any practical folder and start the dev server:
 
 ```bash
-# To run Practical 1
-cd Practical1
+# To run Practical 7 (JWT Authentication & Middleware Pipeline)
+cd Practical7
 npm install
-npm run dev
+npm start   # Starts Node+Express+MongoDB backend at http://localhost:5002
+npm test    # Runs automated end-to-end API & JWT test suite (10/10 test cases)
 
-# To run Practical 2
-cd Practical2
-npm install
-npm run dev
-
-# To run Practical 3
-cd Practical3
-npm install
-npm run dev
-
-# To run Practical 4
-cd Practical4
-npm install
-npm start   # Starts server at http://localhost:5000 with visual API dashboard
-npm test    # Runs automated integration test suite
-
-# To run Practical 5
-cd Practical5
-npm install
-npm start   # Starts server at http://localhost:5000 with MongoDB visual API dashboard
-npm test    # Runs automated integration test suite against MongoDB/Mongoose
-
-# To run Practical 6 (Full-Stack Integration)
-cd Practical6
-npm install
-npm start   # Starts Node+Express+MongoDB backend at http://localhost:5000
-npm test    # Runs automated end-to-end API test suite
 # Open another terminal window to start React frontend:
 npm run dev # Access full-stack app at http://localhost:5173/tasks
 ```
-

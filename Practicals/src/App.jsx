@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
-import Home from './pages/Home';
-import Projects from './pages/Projects';
-import TaskManager from './pages/TaskManager';
-import Contact from './pages/Contact';
-import NotFound from './pages/NotFound';
 import Footer from './components/Footer';
+import LoadingFallback from './components/LoadingFallback';
+import { lazyWithMinDelay } from './utils/lazyWithMinDelay';
+
+// Practical 8: Route-Based Code Splitting with React.lazy() & Minimum Delay Fallback (Supplementary #2)
+const Home = lazyWithMinDelay(() => import('./pages/Home'), 300);
+const Projects = lazyWithMinDelay(() => import('./pages/Projects'), 300);
+const TaskManager = lazyWithMinDelay(() => import('./pages/TaskManager'), 300);
+const Contact = lazyWithMinDelay(() => import('./pages/Contact'), 300);
+const NotFound = lazyWithMinDelay(() => import('./pages/NotFound'), 300);
 
 /**
- * Main App Component
- * Wraps layout in BrowserRouter, manages Light/Dark theme state,
- * and sets up multi-page routes:
- * "/" -> Home
- * "/projects" -> Projects
- * "/contact" -> Contact
- * "*" -> NotFound (404 Error Page)
+ * Main App Component (Practical 8 Optimized)
+ * Uses React.lazy() and Suspense for route-based code splitting
+ * Reduces main bundle size and loads route chunks on demand.
  */
 function App() {
   // Theme state management (Light & Dark mode)
@@ -90,22 +90,24 @@ function App() {
         <NavBar theme={theme} toggleTheme={toggleTheme} />
 
         <main className="main-content">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  studentInfo={studentInfo}
-                  bioData={bioData}
-                  skillsData={skillsData}
-                />
-              }
-            />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/tasks" element={<TaskManager />} />
-            <Route path="/contact" element={<Contact contactData={contactData} />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <Home
+                    studentInfo={studentInfo}
+                    bioData={bioData}
+                    skillsData={skillsData}
+                  />
+                }
+              />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/tasks" element={<TaskManager />} />
+              <Route path="/contact" element={<Contact contactData={contactData} />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </main>
 
         <Footer contactData={contactData} />

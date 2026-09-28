@@ -1,0 +1,33 @@
+{
+  "name": "practical8-performance-optimization-lazy-loading",
+  "version": "1.0.0",
+  "description": "Practical 8: Performance Optimization & Lazy Loading in React (Code Splitting, React.lazy, Suspense, Minimum Delay Fallback & Profiling)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "react",
+    "lazy-loading",
+    "code-splitting",
+    "suspense",
+    "performance-optimization",
+    "bundle-size",
+    "profiling"
+  ],
+  "author": "Jainam Kamani",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "vite": "^8.1.1"
+  }
+}

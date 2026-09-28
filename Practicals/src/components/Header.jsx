@@ -33,7 +33,10 @@ function Header({ studentInfo }) {
 
         <div className="header-info">
           <h1 className="student-title">
-            Hello, I'm <span className="gradient-text">{name || 'Alex Rivers'}</span>
+            Hello, I'm
+            <span className="gradient-text" style={{ display: 'inline-block', marginLeft: '8px' }}>
+              {name || 'Jainam Kamani'}
+            </span>
           </h1>
           <p className="student-role">{role || 'Full-Stack Developer & CS Student'}</p>
 
