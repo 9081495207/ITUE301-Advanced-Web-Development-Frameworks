@@ -1,24 +1,38 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, Profiler } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import LoadingFallback from './components/LoadingFallback';
 import { lazyWithMinDelay } from './utils/lazyWithMinDelay';
 
-// Practical 8: Route-Based Code Splitting with React.lazy() & Minimum Delay Fallback (Supplementary #2)
+// Practical 8: Route-Based Code Splitting with React.lazy()
+// & Minimum Delay Fallback
 const Home = lazyWithMinDelay(() => import('./pages/Home'), 300);
 const Projects = lazyWithMinDelay(() => import('./pages/Projects'), 300);
 const TaskManager = lazyWithMinDelay(() => import('./pages/TaskManager'), 300);
 const Contact = lazyWithMinDelay(() => import('./pages/Contact'), 300);
 const NotFound = lazyWithMinDelay(() => import('./pages/NotFound'), 300);
 
-/**
- * Main App Component (Practical 8 Optimized)
- * Uses React.lazy() and Suspense for route-based code splitting
- * Reduces main bundle size and loads route chunks on demand.
- */
+// React Profiler callback for Practical 8 SS11
+const handleProfilerRender = (
+  id,
+  phase,
+  actualDuration,
+  baseDuration,
+  startTime,
+  commitTime
+) => {
+  console.log('React Profiler:', {
+    id,
+    phase,
+    actualDuration,
+    baseDuration,
+    startTime,
+    commitTime,
+  });
+};
+
 function App() {
-  // Theme state management (Light & Dark mode)
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('portfolio-theme') || 'dark';
   });
@@ -29,7 +43,9 @@ function App() {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'dark' ? 'light' : 'dark'));
+    setTheme((prevTheme) =>
+      prevTheme === 'dark' ? 'light' : 'dark'
+    );
   };
 
   const studentInfo = {
@@ -58,19 +74,42 @@ function App() {
     categories: [
       {
         categoryName: 'Frontend Development',
-        items: ['React.js', 'JavaScript (ES6+)', 'HTML5 & CSS3', 'Vite', 'Tailwind CSS', 'Bootstrap'],
+        items: [
+          'React.js',
+          'JavaScript (ES6+)',
+          'HTML5 & CSS3',
+          'Vite',
+          'Tailwind CSS',
+          'Bootstrap',
+        ],
       },
       {
         categoryName: 'Backend & Databases',
-        items: ['Node.js', 'Express.js', 'RESTful APIs', 'SQL', 'MongoDB'],
+        items: [
+          'Node.js',
+          'Express.js',
+          'RESTful APIs',
+          'SQL',
+          'MongoDB',
+        ],
       },
       {
         categoryName: 'Tools & Workflows',
-        items: ['Git & GitHub', 'VS Code', 'Npm/Vite', 'Postman'],
+        items: [
+          'Git & GitHub',
+          'VS Code',
+          'Npm/Vite',
+          'Postman',
+        ],
       },
       {
         categoryName: 'Core Competencies',
-        items: ['Web Development Frameworks', 'Data Structures', 'OOP', 'Responsive Web Design'],
+        items: [
+          'Web Development Frameworks',
+          'Data Structures',
+          'OOP',
+          'Responsive Web Design',
+        ],
       },
     ],
   };
@@ -86,32 +125,60 @@ function App() {
 
   return (
     <Router>
-      <div className="portfolio-container">
-        <NavBar theme={theme} toggleTheme={toggleTheme} />
+      <Profiler
+        id="PortfolioApp"
+        onRender={handleProfilerRender}
+      >
+        <div className="portfolio-container">
+          <NavBar
+            theme={theme}
+            toggleTheme={toggleTheme}
+          />
 
-        <main className="main-content">
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <Home
-                    studentInfo={studentInfo}
-                    bioData={bioData}
-                    skillsData={skillsData}
-                  />
-                }
-              />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/tasks" element={<TaskManager />} />
-              <Route path="/contact" element={<Contact contactData={contactData} />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </main>
+          <main className="main-content">
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <Home
+                      studentInfo={studentInfo}
+                      bioData={bioData}
+                      skillsData={skillsData}
+                    />
+                  }
+                />
 
-        <Footer contactData={contactData} />
-      </div>
+                <Route
+                  path="/projects"
+                  element={<Projects />}
+                />
+
+                <Route
+                  path="/tasks"
+                  element={<TaskManager />}
+                />
+
+                <Route
+                  path="/contact"
+                  element={
+                    <Contact
+                      contactData={contactData}
+                    />
+                  }
+                />
+
+                <Route
+                  path="*"
+                  element={<NotFound />}
+                />
+              </Routes>
+            </Suspense>
+          </main>
+
+          <Footer contactData={contactData} />
+        </div>
+      </Profiler>
     </Router>
   );
 }

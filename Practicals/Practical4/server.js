@@ -28,6 +28,18 @@ app.use(express.json());
 // 5. Mount Task REST API Router
 app.use('/tasks', taskRoutes);
 
+const validateTaskId = (req, res, next) => {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({
+            error: 'Invalid task ID'
+        });
+    }
+
+    next();
+};
+
 // 6. 404 Middleware Handler for Undefined Routes
 app.use(notFoundHandler);
 
