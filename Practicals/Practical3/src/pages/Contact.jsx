@@ -76,7 +76,7 @@ function Contact({ contactData }) {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="e.g. Jane Doe"
+                    placeholder="e.g. Aarav Patel"
                     required
                   />
                 </div>
@@ -89,7 +89,7 @@ function Contact({ contactData }) {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="e.g. jane@example.com"
+                    placeholder="e.g. aarav.patel@example.com"
                     required
                   />
                 </div>
