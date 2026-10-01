@@ -15,7 +15,8 @@ Practicals/
 ├── Practical5/     → Practical 5: MongoDB Integration and Schema Design with Mongoose
 ├── Practical6/     → Practical 6: Full Stack Integration (React + Node + MongoDB)
 ├── Practical7/     → Practical 7: Authentication & Middleware Pipeline (JWT, bcrypt, Protected Routes)
-└── Practical8/     → Practical 8: Performance Optimization & Lazy Loading in React (Code Splitting, Suspense)
+├── Practical8/     → Practical 8: Performance Optimization & Lazy Loading in React (Code Splitting, Suspense)
+└── Practical9/     → Practical 9: In-Memory Caching and Query Optimization (node-cache, TTL, Invalidation)
 ```
 
 ---
@@ -32,6 +33,8 @@ Practicals/
 | **[📁 Practical6](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical6)** | Full Stack Integration React + Node + MongoDB (Central `api.js`, CORS, Optimistic UI Updates, Confirm Dialog, Toast Alerts) | 📖 [Practical6 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical6/README.md) |
 | **[📁 Practical7](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical7)** | Authentication & Middleware Pipeline (JWT Authorization `Bearer <token>`, Password Hashing `bcryptjs`, Server-Side Input Validation, `/auth/me` Profile Endpoint) | 📖 [Practical7 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical7/README.md) |
 | **[📁 Practical8](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical8)** | Performance Optimization & Lazy Loading in React (`React.lazy()`, `<Suspense>`, Minimum Delay Fallback `lazyWithMinDelay`, Heavy Component Chunking) | 📖 [Practical8 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical8/README.md) |
+| **[📁 Practical9](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical9)** | In-Memory Caching and Query Optimization (`node-cache`, TTL, Write Invalidation, Cache Metrics Debug API) | 📖 [Practical9 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical9/README.md) |
+
 
 
 ---
