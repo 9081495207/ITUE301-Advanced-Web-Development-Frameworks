@@ -16,7 +16,8 @@ Practicals/
 ├── Practical6/     → Practical 6: Full Stack Integration (React + Node + MongoDB)
 ├── Practical7/     → Practical 7: Authentication & Middleware Pipeline (JWT, bcrypt, Protected Routes)
 ├── Practical8/     → Practical 8: Performance Optimization & Lazy Loading in React (Code Splitting, Suspense)
-└── Practical9/     → Practical 9: In-Memory Caching and Query Optimization (node-cache, TTL, Invalidation)
+├── Practical9/     → Practical 9: In-Memory Caching and Query Optimization (node-cache, TTL, Invalidation)
+└── Practical10/    → Practical 10: Asynchronous Processing with Event-Driven Architecture (EventEmitter, Non-Blocking Tasks)
 ```
 
 ---
@@ -34,8 +35,7 @@ Practicals/
 | **[📁 Practical7](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical7)** | Authentication & Middleware Pipeline (JWT Authorization `Bearer <token>`, Password Hashing `bcryptjs`, Server-Side Input Validation, `/auth/me` Profile Endpoint) | 📖 [Practical7 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical7/README.md) |
 | **[📁 Practical8](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical8)** | Performance Optimization & Lazy Loading in React (`React.lazy()`, `<Suspense>`, Minimum Delay Fallback `lazyWithMinDelay`, Heavy Component Chunking) | 📖 [Practical8 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical8/README.md) |
 | **[📁 Practical9](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical9)** | In-Memory Caching and Query Optimization (`node-cache`, TTL, Write Invalidation, Cache Metrics Debug API) | 📖 [Practical9 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical9/README.md) |
-
-
+| **[📁 Practical10](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical10)** | Asynchronous Processing with Event-Driven Architecture (Node.js native `EventEmitter`, non-blocking side-effects, error listeners) | 📖 [Practical10 README](file:///Users/kamanijainamrajeshkumar/Documents/ITUE301-Advanced%20Web%20Development%20Frameworks/Practicals/Practical10/README.md) |
 
 ---
 
@@ -44,12 +44,9 @@ Practicals/
 Navigate into any practical folder and start the dev server:
 
 ```bash
-# To run Practical 7 (JWT Authentication & Middleware Pipeline)
-cd Practical7
+# To run Practical 10 (Asynchronous Processing with Event-Driven Architecture)
+cd Practical10
 npm install
-npm start   # Starts Node+Express+MongoDB backend at http://localhost:5002
-npm test    # Runs automated end-to-end API & JWT test suite (10/10 test cases)
-
-# Open another terminal window to start React frontend:
-npm run dev # Access full-stack app at http://localhost:5173/tasks
+npm test    # Runs automated end-to-end event-driven architecture test suite
+npm start   # Starts Node+Express+MongoDB backend at http://localhost:5003
 ```
