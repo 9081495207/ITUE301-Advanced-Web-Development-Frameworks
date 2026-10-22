@@ -57,7 +57,7 @@ app.use((req, res) => {
 });
 
 // 7. Global Error Handler
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error("Global Error Handler caught:", err);
 
   const statusCode = err.statusCode || 500;

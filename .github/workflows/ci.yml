@@ -54,9 +54,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
+          cache-dependency-path: Practicals/Practical12/backend/package-lock.json
 
-      - name: Lint placeholder
-        run: |
-          echo "✅ Lint step — install eslint and add 'lint' script to enable."
-          exit 0
+      - name: Install dependencies
+        run: npm install
+        working-directory: Practicals/Practical12/backend
+
+      - name: Run ESLint
+        run: npm run lint
         working-directory: Practicals/Practical12/backend
