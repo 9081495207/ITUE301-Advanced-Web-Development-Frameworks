@@ -303,16 +303,16 @@ function TaskManager() {
     setAiDisclaimer(false);
     try {
       const result = await generateDescription(title.trim());
-      if (result.fallback) {
-        // Graceful degradation — AI unavailable, app keeps working
+      if (result.description) {
+        setDescription(result.description);
+        setAiDisclaimer(true); // Show disclaimer: content is AI-generated
+        const providerLabel = result.provider ? ` (${result.provider})` : '';
+        showToast(`✨ Description generated${providerLabel}! Feel free to edit it.`, 'success');
+      } else if (result.fallback) {
         showToast(
           result.fallbackReason || 'AI service unavailable. You can type a description manually.',
           'error'
         );
-      } else {
-        setDescription(result.description);
-        setAiDisclaimer(true); // Show disclaimer: content is AI-generated
-        showToast('✨ AI description generated! Feel free to edit it.', 'success');
       }
     } catch (err) {
       showToast(`AI generation failed: ${err.message}`, 'error');
