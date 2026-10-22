@@ -156,7 +156,6 @@ function TaskManager() {
   const handleQuickDemoLogin = async () => {
     setAuthError(null);
     try {
-      // Try registering demo user first if doesn't exist
       try {
         await registerUser({
           name: 'Jainam (Demo User)',
@@ -164,7 +163,7 @@ function TaskManager() {
           password: 'Password123!'
         });
       } catch {
-        // If user exists, proceed to login
+        // If user already registered, proceed to login
       }
 
       const response = await loginUser({
@@ -175,8 +174,10 @@ function TaskManager() {
       setCurrentUser(response.user);
       showToast('Logged in as Demo User with JWT Token!', 'success');
       fetchTasksData();
+      return response.user;
     } catch (err) {
       setAuthError(err.message);
+      throw err;
     }
   };
 
@@ -192,6 +193,16 @@ function TaskManager() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
+
+    // Auto-login as Demo User if session is not active
+    if (!currentUser) {
+      try {
+        await handleQuickDemoLogin();
+      } catch (authErr) {
+        showToast('Please log in first to create tasks.', 'error');
+        return;
+      }
+    }
 
     if (editingId) {
       try {
@@ -224,12 +235,30 @@ function TaskManager() {
       showToast('Creating task (Optimistic Update)...', 'success');
 
       try {
-        const response = await createTask({
-          title: submittedTitle,
-          description: submittedDesc,
-          priority: submittedPriority,
-          completed: submittedCompleted
-        });
+        let response;
+        try {
+          response = await createTask({
+            title: submittedTitle,
+            description: submittedDesc,
+            priority: submittedPriority,
+            completed: submittedCompleted
+          });
+        } catch (initialErr) {
+          // If token was invalidated by server restart, auto-relogin and retry creation once
+          const msg = (initialErr.message || '').toLowerCase();
+          if (msg.includes('401') || msg.includes('token') || msg.includes('unauthorized') || msg.includes('user')) {
+            await handleQuickDemoLogin();
+            response = await createTask({
+              title: submittedTitle,
+              description: submittedDesc,
+              priority: submittedPriority,
+              completed: submittedCompleted
+            });
+          } else {
+            throw initialErr;
+          }
+        }
+
         setTasks((prev) => prev.map((t) => (t._id === tempId ? response.data : t)));
         showToast('Task persisted in MongoDB successfully!', 'success');
       } catch (err) {
