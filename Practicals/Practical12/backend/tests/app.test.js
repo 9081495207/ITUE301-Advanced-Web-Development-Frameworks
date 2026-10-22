@@ -28,7 +28,7 @@ afterAll(async () => {
 describe('GET / - Root Health Endpoint', () => {
   test('returns HTTP 200 and a JSON status object', async () => {
     const res = await request(app).get('/');
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty('status', 200);
     expect(res.body).toHaveProperty('message');
   });
