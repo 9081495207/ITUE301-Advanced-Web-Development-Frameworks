@@ -10,6 +10,44 @@ Integrate an external AI service (OpenAI GPT-4o-mini) into the Task Management a
 
 ---
 
+## Repository Structure for Practical 13
+
+Like previous practicals, Practical 13 is fully self-contained with its own backend, frontend, docker orchestration, and environment configuration:
+
+```
+Practical13/
+├── .env.example                     # Environment template (PORT, MONGO_URI, JWT_SECRET, OPENAI_API_KEY)
+├── docker-compose.yml               # Multi-container orchestration (backend, frontend, mongodb)
+├── README.md                        # Documentation & lab guide
+├── backend/
+│   ├── Dockerfile                   # Node.js container build
+│   ├── package.json                 # Backend dependencies (express, mongoose, openai, jest)
+│   ├── server.js                    # Express app mounting auth, task, and AI routes
+│   ├── src/
+│   │   ├── config/db.js             # Mongoose connection + In-Memory MongoDB fallback
+│   │   ├── controllers/             # Auth and Task controller handlers
+│   │   ├── middleware/              # JWT auth and error middleware
+│   │   ├── models/                  # User and Task schemas
+│   │   ├── routes/
+│   │   │   ├── authRoutes.js        # /auth/register, /auth/login, /auth/me
+│   │   │   ├── taskRoutes.js        # /tasks CRUD routes
+│   │   │   └── aiRoutes.js          # POST /api/ai/generate-description (OpenAI integration)
+│   │   └── events/                  # Event listeners and emitters
+│   └── tests/
+│       └── app.test.js              # Test suite including AI endpoint validation & graceful degradation
+└── frontend/
+    ├── Dockerfile                   # Multi-stage Nginx Vite build
+    ├── nginx.conf                   # Reverse proxy configuration
+    ├── package.json                 # Frontend dependencies (React, Vite)
+    └── src/
+        ├── services/
+        │   └── api.js               # Frontend API service calling backend AI endpoint
+        └── pages/
+            └── TaskManager.jsx      # Task Manager with ✨ AI Generate button, loading spinner & disclaimer
+```
+
+---
+
 ## Architecture
 
 ```
@@ -18,10 +56,10 @@ React Frontend (TaskManager.jsx)
     │   Clicks "✨ AI Generate" button
     ▼
 Frontend API Service (src/services/api.js)
-    │   POST /api/ai/generate-description   ← your own backend (JWT optional)
+    │   POST /api/ai/generate-description   ← Express backend
     │   API key is NEVER sent from frontend
     ▼
-Express Backend (Practical11/backend/src/routes/aiRoutes.js)
+Express Backend (backend/src/routes/aiRoutes.js)
     │   Reads OPENAI_API_KEY from process.env (.env)
     │   Rate limit: max 1 request per title per 60 seconds
     │   Calls OpenAI GPT-4o-mini
@@ -36,53 +74,55 @@ On API failure: catch error → return { fallback: true } → app shows friendly
 
 ---
 
-## Files Created / Modified
+## Setup & Running
 
-| File | Change |
-|------|--------|
-| [`../Practical11/backend/src/routes/aiRoutes.js`](../Practical11/backend/src/routes/aiRoutes.js) | **NEW** — AI route with rate limiting & graceful degradation |
-| [`../Practical11/backend/server.js`](../Practical11/backend/server.js) | Imported & mounted `aiRoutes` at `/api/ai` |
-| [`../Practical11/.env`](../Practical11/.env) | Added `OPENAI_API_KEY` placeholder |
-| [`../src/services/api.js`](../src/services/api.js) | Added `generateDescription()` function |
-| [`../src/pages/TaskManager.jsx`](../src/pages/TaskManager.jsx) | Added AI button, loading spinner, disclaimer badge, graceful fallback UI |
-
----
-
-## Setup
-
-### 1. Get an OpenAI API key
-Go to [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys) and create a key.
-
-### 2. Add it to `.env` (never commit this!)
+### 1. Configure Environment Variables
+Copy `.env.example` to `.env` in `Practical13/`:
+```bash
+cp Practical13/.env.example Practical13/.env
+```
+Add your OpenAI API key in `Practical13/.env`:
 ```env
-# Practical11/.env
-OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxx
+PORT=5000
+MONGO_URI=mongodb://mongodb:27017/taskdb
+JWT_SECRET=practical13_ai_integration_secret_key_2026
+OPENAI_API_KEY=sk-proj-your-actual-key-here
 ```
+*(Get your key from [platform.openai.com/api-keys](https://platform.openai.com/api-keys). The file is already gitignored and will never be committed.)*
 
-### 3. Start the backend
+### 2. Run the Backend Locally
 ```bash
-cd Practical11/backend
+cd Practical13/backend
+npm install
 npm run dev
 ```
 
-### 4. Start the frontend
+### 3. Run the Frontend Locally
 ```bash
-# from the root Practicals directory
+cd Practical13/frontend
+npm install
 npm run dev
 ```
+
+### 4. Run Automated Tests
+```bash
+cd Practical13/backend
+npm test
+```
+All 11 tests will pass, including the AI description generation endpoint tests.
 
 ---
 
 ## How to Use the AI Feature
 
-1. Navigate to the **Task Manager** page
-2. Log in (or use Quick Demo Login)
-3. In the task creation form, **type a task title** (e.g. "Write unit tests for authentication")
-4. Click the **✨ AI Generate** button next to the Description label
-5. The button shows a **spinner** while waiting for the AI response
-6. The AI-generated description fills the textarea
-7. A **🤖 AI-generated suggestion** disclaimer appears — reminding you to review it
-8. Edit the description as needed, then click **✨ Add Task**
+1. Navigate to the **Task Manager** page.
+2. Log in (or use Quick Demo Login).
+3. In the task creation form, **type a task title** (e.g., *"Set up Docker containerization with Nginx reverse proxy"*).
+4. Click the **✨ AI Generate** button next to the Description label.
+5. The button shows a **spinner** while waiting for the AI response.
+6. The AI-generated description automatically populates the textarea.
+7. A **🤖 AI-generated suggestion** disclaimer badge appears reminding you to review and edit.
+8. Edit the description as needed, then click **✨ Add Task**.
 
 ---
 
@@ -97,7 +137,7 @@ const client = new OpenAI({ apiKey });
 
 ### ✅ Graceful Degradation
 ```js
-// If OpenAI fails, the app continues working normally
+// If OpenAI fails, the app continues working normally without crashing
 } catch (err) {
   return res.status(200).json({
     description: '',
@@ -119,22 +159,7 @@ if (isRateLimited(titleKey)) {
 When a description is AI-generated, a badge shows:
 > 🤖 **AI-generated suggestion** — please review and edit before saving.
 
-The disclaimer disappears if the user manually edits the text.
-
----
-
-## Testing the Failure Path (Lab Step 6)
-
-To demonstrate graceful degradation with an invalid API key:
-
-1. In `Practical11/.env`, change the key to something invalid:
-   ```env
-   OPENAI_API_KEY=sk-invalid-key-for-testing
-   ```
-2. Restart the backend: `npm run dev`
-3. Click "✨ AI Generate" in the UI
-4. The app shows a toast: *"AI service temporarily unavailable. You can type a description manually."*
-5. The task form **remains fully functional** — the AI failure does not break anything
+The disclaimer automatically disappears if the user manually edits the text.
 
 ---
 
@@ -154,6 +179,7 @@ To demonstrate graceful degradation with an invalid API key:
 
 | Criteria | Status |
 |----------|--------|
+| Dedicated Practical13 folder with backend & frontend | ✅ |
 | AI API called from backend (key in `.env`) | ✅ |
 | API key not exposed in frontend | ✅ |
 | Meaningful AI feature (auto-generates task description) | ✅ |

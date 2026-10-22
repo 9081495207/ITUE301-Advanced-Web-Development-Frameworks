@@ -1,0 +1,57 @@
+services:
+  # 1. MongoDB Database Service
+  mongodb:
+    image: mongo:6-jammy
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=taskdb
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  # 2. Node.js / Express Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: always
+    ports:
+      - "5004:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/taskdb
+      - JWT_SECRET=practical11_containerization_secret_key_2026
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  # 3. React Frontend Service (Multi-stage build served via Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+# Isolated Internal Bridge Network
+networks:
+  app-network:
+    driver: bridge
+
+# Named Volume for Persistent MongoDB Data
+volumes:
+  mongo-data:
+    driver: local

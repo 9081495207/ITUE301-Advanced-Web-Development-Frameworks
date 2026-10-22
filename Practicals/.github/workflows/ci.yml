@@ -3,12 +3,10 @@
 # Workflow: CI Pipeline
 #
 # Triggers on every push to the `main` branch.
-# Jobs:
-#   build-and-test  → installs dependencies & runs Jest tests (backend)
-#   lint            → runs ESLint on the backend codebase
+# Tests the self-contained Practical12/backend project.
 # ─────────────────────────────────────────────────────────────────────────────
 
-name: CI Pipeline
+name: CI Pipeline - Practical 12
 
 on:
   push:
@@ -23,29 +21,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Check out the repository code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Set up Node.js 18 with npm cache for faster installs
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: npm
-          cache-dependency-path: Practical11/backend/package-lock.json
+          cache-dependency-path: Practicals/Practical12/backend/package-lock.json
 
-      # 3. Install backend dependencies
       - name: Install dependencies
         run: npm install
-        working-directory: Practical11/backend
+        working-directory: Practicals/Practical12/backend
 
-      # 4. Run the Jest test suite
       - name: Run tests
         run: npm test
-        working-directory: Practical11/backend
+        working-directory: Practicals/Practical12/backend
         env:
-          # No MONGO_URI → triggers the in-memory MongoDB fallback
           NODE_ENV: test
 
   # ── Job 2: Lint (supplementary — runs in parallel with tests) ──────────────
@@ -61,16 +54,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
-          cache-dependency-path: Practical11/backend/package-lock.json
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: Practical11/backend
-
-      - name: Check code style (ESLint placeholder)
+      - name: Lint placeholder
         run: |
-          echo "✅ Lint step placeholder — install eslint and add 'lint' script to enable."
-          echo "   Example: npm install --save-dev eslint && npx eslint src/"
+          echo "✅ Lint step — install eslint and add 'lint' script to enable."
           exit 0
-        working-directory: Practical11/backend
+        working-directory: Practicals/Practical12/backend
