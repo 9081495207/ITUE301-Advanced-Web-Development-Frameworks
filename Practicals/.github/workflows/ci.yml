@@ -1,0 +1,76 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Practical 12: CI/CD Pipeline with GitHub Actions
+# Workflow: CI Pipeline
+#
+# Triggers on every push to the `main` branch.
+# Jobs:
+#   build-and-test  → installs dependencies & runs Jest tests (backend)
+#   lint            → runs ESLint on the backend codebase
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Job 1: Install dependencies and run automated tests ────────────────────
+  build-and-test:
+    name: Build & Test (Node.js 18)
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js 18 with npm cache for faster installs
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: Practical11/backend/package-lock.json
+
+      # 3. Install backend dependencies
+      - name: Install dependencies
+        run: npm install
+        working-directory: Practical11/backend
+
+      # 4. Run the Jest test suite
+      - name: Run tests
+        run: npm test
+        working-directory: Practical11/backend
+        env:
+          # No MONGO_URI → triggers the in-memory MongoDB fallback
+          NODE_ENV: test
+
+  # ── Job 2: Lint (supplementary — runs in parallel with tests) ──────────────
+  lint:
+    name: Lint Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: Practical11/backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: Practical11/backend
+
+      - name: Check code style (ESLint placeholder)
+        run: |
+          echo "✅ Lint step placeholder — install eslint and add 'lint' script to enable."
+          echo "   Example: npm install --save-dev eslint && npx eslint src/"
+          exit 0
+        working-directory: Practical11/backend
