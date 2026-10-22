@@ -1,0 +1,11 @@
+{
+  "name": "practical13",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Practical 13: AI API Integration root script wrapper",
+  "scripts": {
+    "test": "npm --prefix backend test",
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev"
+  }
+}

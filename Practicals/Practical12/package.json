@@ -1,0 +1,11 @@
+{
+  "name": "practical12",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Practical 12: CI/CD Pipeline root script wrapper",
+  "scripts": {
+    "test": "npm --prefix backend test",
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev"
+  }
+}
