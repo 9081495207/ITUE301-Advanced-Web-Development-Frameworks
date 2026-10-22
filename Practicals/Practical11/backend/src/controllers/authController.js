@@ -43,7 +43,8 @@ const registerUser = async (req, res, next) => {
       status: 201,
       message: 'User registered successfully',
       token,
-      data: user
+      data: user,
+      user
     });
   } catch (err) {
     next(err);
@@ -86,7 +87,8 @@ const loginUser = async (req, res, next) => {
       status: 200,
       message: 'Login successful',
       token,
-      data: user
+      data: user,
+      user
     });
   } catch (err) {
     next(err);
@@ -97,11 +99,38 @@ const getMe = async (req, res, next) => {
   try {
     res.status(200).json({
       status: 200,
-      data: req.user
+      data: req.user,
+      user: req.user
     });
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = { registerUser, loginUser, getMe };
+const demoLogin = async (req, res, next) => {
+  try {
+    let user = await User.findOne({ email: 'jainam.demo@example.com' });
+    if (!user) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('Password123!', salt);
+      user = await User.create({
+        name: 'Jainam (Demo User)',
+        email: 'jainam.demo@example.com',
+        password: hashedPassword
+      });
+    }
+
+    const token = generateToken(user._id);
+    res.status(200).json({
+      status: 200,
+      message: 'Demo login successful',
+      token,
+      data: user,
+      user
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { registerUser, loginUser, getMe, demoLogin };

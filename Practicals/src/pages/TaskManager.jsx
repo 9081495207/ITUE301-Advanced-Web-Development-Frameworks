@@ -10,6 +10,7 @@ import {
   registerUser,
   getMe,
   logoutUser,
+  demoLoginUser,
   generateDescription   // Practical 13: AI API Integration
 } from '../services/api';
 import Spinner from '../components/Spinner';
@@ -87,12 +88,15 @@ function TaskManager() {
 
     try {
       const response = await getMe();
-      setCurrentUser(response.user);
-      fetchTasksData();
-    } catch (err) {
-      setCurrentUser(null);
-      logoutUser();
-      showToast('Session expired. Please log in to continue.', 'error');
+      const user = response.data || response.user;
+      if (user) {
+        setCurrentUser(user);
+        fetchTasksData();
+      } else {
+        await handleQuickDemoLogin();
+      }
+    } catch {
+      await handleQuickDemoLogin();
     } finally {
       setAuthLoading(false);
     }
@@ -111,9 +115,7 @@ function TaskManager() {
       setTasks(response.data || []);
     } catch (err) {
       if (err.message.includes('401') || err.message.includes('token') || err.message.includes('Unauthorized') || err.message.includes('verification failed')) {
-        setCurrentUser(null);
-        logoutUser();
-        showToast('Unauthorized (401). Invalid JWT Token. Redirected to Login.', 'error');
+        await handleQuickDemoLogin();
       } else {
         setError(`Failed to fetch tasks from MongoDB server (${getActiveBaseUrl()}/tasks): ${err.message}`);
       }
@@ -134,15 +136,17 @@ function TaskManager() {
           email: authEmail,
           password: authPassword
         });
-        setCurrentUser(response.user);
-        showToast(`Registration successful! Welcome ${response.user.name}.`, 'success');
+        const user = response.data || response.user;
+        setCurrentUser(user);
+        showToast(`Registration successful! Welcome ${user?.name || authName}.`, 'success');
       } else {
         const response = await loginUser({
           email: authEmail,
           password: authPassword
         });
-        setCurrentUser(response.user);
-        showToast(`Login successful! Welcome back ${response.user.name}.`, 'success');
+        const user = response.data || response.user;
+        setCurrentUser(user);
+        showToast(`Login successful! Welcome back ${user?.name || ''}.`, 'success');
       }
       setAuthPassword('');
       fetchTasksData();
@@ -156,27 +160,15 @@ function TaskManager() {
   const handleQuickDemoLogin = async () => {
     setAuthError(null);
     try {
-      try {
-        await registerUser({
-          name: 'Jainam (Demo User)',
-          email: 'jainam.demo@example.com',
-          password: 'Password123!'
-        });
-      } catch {
-        // If user already registered, proceed to login
-      }
-
-      const response = await loginUser({
-        email: 'jainam.demo@example.com',
-        password: 'Password123!'
-      });
-
-      setCurrentUser(response.user);
-      showToast('Logged in as Demo User with JWT Token!', 'success');
+      const response = await demoLoginUser();
+      const user = response.data || response.user || { name: 'Jainam (Demo User)', email: 'jainam.demo@example.com' };
+      setCurrentUser(user);
+      showToast('⚡ 1-Click Demo Login Successful!', 'success');
       fetchTasksData();
-      return response.user;
+      return user;
     } catch (err) {
       setAuthError(err.message);
+      showToast(`Demo Login Error: ${err.message}`, 'error');
       throw err;
     }
   };

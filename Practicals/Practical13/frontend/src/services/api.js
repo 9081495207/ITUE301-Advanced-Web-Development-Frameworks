@@ -102,6 +102,21 @@ export const loginUser = async (credentials) => {
   return data;
 };
 
+export const demoLoginUser = async () => {
+  const res = await fetchApi('/auth/demo-login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || 'Demo login failed');
+  }
+  if (data.token) {
+    setAuthToken(data.token);
+  }
+  return data;
+};
+
 // Supplementary Problem #1: /auth/me endpoint
 export const getMe = async () => {
   const res = await fetchApi('/auth/me');

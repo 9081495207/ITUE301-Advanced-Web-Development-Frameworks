@@ -2,9 +2,9 @@
  * Central API Service Module with JWT Authentication & Dynamic Port Failover
  * Supports automatic fallback across ports 5001 and 5000
  */
-const DEFAULT_PORTS = ['', 5000, 5003, 5002, 5001];
-let activeBaseUrl = '';
-const TOKEN_KEY = 'practical11_jwt_token';
+const DEFAULT_PORTS = [5002, 5001, 5000];
+let activeBaseUrl = `http://localhost:${DEFAULT_PORTS[0]}`;
+const TOKEN_KEY = 'practical7_jwt_token';
 
 /**
  * Token Storage Helpers
@@ -102,6 +102,21 @@ export const loginUser = async (credentials) => {
   return data;
 };
 
+export const demoLoginUser = async () => {
+  const res = await fetchApi('/auth/demo-login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || 'Demo login failed');
+  }
+  if (data.token) {
+    setAuthToken(data.token);
+  }
+  return data;
+};
+
 // Supplementary Problem #1: /auth/me endpoint
 export const getMe = async () => {
   const res = await fetchApi('/auth/me');
@@ -172,4 +187,25 @@ export const deleteTask = async (id) => {
     throw new Error(data.message || 'Failed to delete task');
   }
   return data;
+};
+
+/**
+ * Practical 13: AI API Integration
+ * Calls the backend /api/ai/generate-description endpoint.
+ * The OpenAI API key is NEVER sent from the frontend — it is used server-side only.
+ *
+ * @param {string} title - Task title to generate a description for
+ * @returns {{ description: string, fallback: boolean, fallbackReason?: string }}
+ */
+export const generateDescription = async (title) => {
+  const res = await fetchApi('/api/ai/generate-description', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title })
+  });
+  const data = await res.json();
+  if (!res.ok && res.status !== 429) {
+    throw new Error(data.message || 'Failed to generate description');
+  }
+  return data; // { description, fallback, fallbackReason? }
 };
