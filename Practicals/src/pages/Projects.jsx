@@ -13,7 +13,7 @@ const AnalyticsChart = lazy(() => import('../components/AnalyticsChart'));
  * Features username controls, preset chips, language filters, sorting, search filtering, and analytics stats.
  */
 function Projects() {
-  const [username, setUsername] = useState('octocat');
+  const [username, setUsername] = useState('9081495207');
   const [showChart, setShowChart] = useState(false);
   const [repos, setRepos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ function Projects() {
   const [sortBy, setSortBy] = useState('stars'); // 'stars', 'updated', 'name'
 
   // Preset GitHub Accounts for quick testing
-  const presetUsers = ['octocat', 'facebook', 'vercel', 'gaearon', 'jainamkamani'];
+  const presetUsers = ['9081495207', 'octocat', 'facebook', 'vercel', 'gaearon'];
 
   // Function to fetch GitHub repositories
   const fetchRepos = (targetUser = username) => {

@@ -5,6 +5,30 @@ import React from 'react';
  * Displays contact channels, social links, location, and dynamic copyright info.
  * Receives `contactData` object via props.
  */
+const getGithubUrl = (val) => {
+  if (!val) return 'https://github.com/9081495207';
+  const cleaned = val.trim();
+  if (cleaned.startsWith('http://') || cleaned.startsWith('https://')) {
+    return cleaned;
+  }
+  if (cleaned.includes('github.com')) {
+    return `https://${cleaned}`;
+  }
+  return `https://github.com/${cleaned}`;
+};
+
+const getLinkedInUrl = (val) => {
+  if (!val) return 'https://www.linkedin.com/in/jainam-kamani-358179374/';
+  const cleaned = val.trim();
+  if (cleaned.startsWith('http://') || cleaned.startsWith('https://')) {
+    return cleaned;
+  }
+  if (cleaned.includes('linkedin.com')) {
+    return `https://${cleaned}`;
+  }
+  return `https://www.linkedin.com/in/${cleaned}`;
+};
+
 function Footer({ contactData }) {
   const { email, github, linkedin, location, copyrightYear, studentName } = contactData || {};
 
@@ -27,12 +51,12 @@ function Footer({ contactData }) {
             </a>
           )}
           {github && (
-            <a href={`https://${github}`} className="contact-link" target="_blank" rel="noopener noreferrer">
+            <a href={getGithubUrl(github)} className="contact-link" target="_blank" rel="noopener noreferrer">
               💻 GitHub
             </a>
           )}
           {linkedin && (
-            <a href={`https://${linkedin}`} className="contact-link" target="_blank" rel="noopener noreferrer">
+            <a href={getLinkedInUrl(linkedin)} className="contact-link" target="_blank" rel="noopener noreferrer">
               🔗 LinkedIn
             </a>
           )}

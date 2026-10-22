@@ -3,9 +3,40 @@ import React, { useState } from 'react';
 /**
  * Modern Footer Component with Let's Connect Channel Cards & Social Links
  */
+/**
+ * Helper to safely construct full HTTPS URL regardless of input format
+ * (e.g. 'jainamkamani', 'github.com/jainamkamani', 'https://github.com/jainamkamani')
+ */
+const getGithubUrl = (val) => {
+  if (!val) return 'https://github.com/9081495207';
+  const cleaned = val.trim();
+  if (cleaned.startsWith('http://') || cleaned.startsWith('https://')) {
+    return cleaned;
+  }
+  if (cleaned.includes('github.com')) {
+    return `https://${cleaned}`;
+  }
+  return `https://github.com/${cleaned}`;
+};
+
+const getLinkedInUrl = (val) => {
+  if (!val) return 'https://www.linkedin.com/in/jainam-kamani-358179374/';
+  const cleaned = val.trim();
+  if (cleaned.startsWith('http://') || cleaned.startsWith('https://')) {
+    return cleaned;
+  }
+  if (cleaned.includes('linkedin.com')) {
+    return `https://${cleaned}`;
+  }
+  return `https://www.linkedin.com/in/${cleaned}`;
+};
+
 function Footer({ contactData }) {
   const { email, github, linkedin, location, copyrightYear, studentName } = contactData || {};
   const [copied, setCopied] = useState(false);
+
+  const githubUrl = getGithubUrl(github);
+  const linkedinUrl = getLinkedInUrl(linkedin);
 
   const handleCopyEmail = () => {
     const targetEmail = email || 'jainamkamani95@gmail.com';
@@ -51,11 +82,11 @@ function Footer({ contactData }) {
             </div>
             <div className="channel-info">
               <div className="channel-label">GitHub Profile</div>
-              <a href={`https://${github || 'github.com/jainamkamani'}`} target="_blank" rel="noopener noreferrer" className="channel-value-link">
-                {github || 'github.com/jainamkamani'}
+              <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="channel-value-link">
+                {github || 'github.com/9081495207'}
               </a>
             </div>
-            <a href={`https://${github || 'github.com/jainamkamani'}`} target="_blank" rel="noopener noreferrer" className="channel-action-btn">
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="channel-action-btn">
               🔗 Visit
             </a>
           </div>
@@ -67,11 +98,11 @@ function Footer({ contactData }) {
             </div>
             <div className="channel-info">
               <div className="channel-label">LinkedIn Network</div>
-              <a href={`https://${linkedin || 'linkedin.com/in/jainamkamani'}`} target="_blank" rel="noopener noreferrer" className="channel-value-link">
+              <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="channel-value-link">
                 {linkedin || 'linkedin.com/in/jainamkamani'}
               </a>
             </div>
-            <a href={`https://${linkedin || 'linkedin.com/in/jainamkamani'}`} target="_blank" rel="noopener noreferrer" className="channel-action-btn">
+            <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="channel-action-btn">
               🔗 Connect
             </a>
           </div>

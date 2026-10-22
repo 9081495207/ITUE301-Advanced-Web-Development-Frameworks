@@ -117,8 +117,8 @@ function App() {
   const contactData = {
     studentName: 'Jainam Kamani',
     email: 'jainamkamani95@gmail.com',
-    github: 'github.com/jainamkamani',
-    linkedin: 'linkedin.com/in/jainamkamani',
+    github: 'https://github.com/9081495207',
+    linkedin: 'https://www.linkedin.com/in/jainam-kamani-358179374/',
     location: 'Junagadh, Gujarat, India',
     copyrightYear: 2026,
   };

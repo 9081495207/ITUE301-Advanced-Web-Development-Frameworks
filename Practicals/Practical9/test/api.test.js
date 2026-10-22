@@ -4,11 +4,46 @@ const http = require('http');
 const app = require('../server');
 const { flushCache, resetCacheMetrics } = require('../src/config/cache');
 
+// Fallback runner for running directly with `node test/api.test.js` outside of Jest
+if (typeof describe === 'undefined') {
+  const tests = [];
+  let beforeAllFn, afterAllFn;
+  global.describe = (name, fn) => {
+    setTimeout(async () => {
+      try {
+        if (beforeAllFn) await beforeAllFn();
+        for (const t of tests) {
+          console.log(`Running test: ${t.name}`);
+          await t.fn();
+        }
+      } catch (err) {
+        console.error("Test failed:", err);
+        process.exitCode = 1;
+      } finally {
+        if (afterAllFn) await afterAllFn();
+      }
+    }, 0);
+    fn();
+  };
+  global.beforeAll = (fn) => { beforeAllFn = fn; };
+  global.afterAll = (fn) => { afterAllFn = fn; };
+  global.test = (name, fn) => { tests.push({ name, fn }); };
+  global.expect = (actual) => ({
+    toBe: (expected) => {
+      if (actual !== expected) throw new Error(`Expected ${expected}, got ${actual}`);
+    },
+    toBeDefined: () => {
+      if (actual === undefined) throw new Error(`Expected defined value, got undefined`);
+    }
+  });
+}
+
 let mongoServer;
 let server;
 let baseUrl;
 let token;
 let sampleTaskId;
+let createdTaskId;
 
 /**
  * Helper to make HTTP requests using native http module
@@ -60,44 +95,48 @@ const makeRequest = (method, path, body = null, authToken = null) => {
   });
 };
 
-const runTests = async () => {
-  console.log(`========================================================================`);
-  console.log(`🧪 PRACTICAL 9: IN-MEMORY CACHING & PERFORMANCE TEST SUITE`);
-  console.log(`========================================================================\n`);
-
-  try {
-    // 1. Setup Mongo Memory Server
+describe('Practical 9: In-Memory Caching & Performance Test Suite', () => {
+  beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
     await mongoose.connect(mongoUri);
-    console.log(`✅ Connected to MongoMemoryServer: ${mongoUri}`);
 
-    // 2. Start HTTP Server
     await new Promise((resolve) => {
       server = app.listen(0, () => {
         const port = server.address().port;
         baseUrl = `http://localhost:${port}`;
-        console.log(`✅ Test server running on ${baseUrl}\n`);
         resolve();
       });
     });
 
-    // Reset Cache
     flushCache();
     resetCacheMetrics();
+  }, 30000);
 
-    // 3. Register User & Obtain JWT
-    console.log(`--- Step A: Authentication Setup ---`);
+  afterAll(async () => {
+    if (server) {
+      await new Promise((resolve) => server.close(resolve));
+    }
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
+    await mongoose.disconnect();
+  });
+
+  test('Step A: Register User & Obtain JWT Token', async () => {
     const regRes = await makeRequest('POST', '/auth/register', {
       name: 'Caching Tester',
       email: 'caching.tester@example.com',
       password: 'password123'
     });
-    token = regRes.body.token;
-    console.log(`✅ Registered user and received JWT token.\n`);
 
-    // 4. Seed Database with Tasks
-    console.log(`--- Step B: Database Seeding ---`);
+    expect(regRes.statusCode).toBe(201);
+    expect(regRes.body.token).toBeDefined();
+    token = regRes.body.token;
+  });
+
+  test('Step B: Seed Database with 25 Tasks', async () => {
+    expect(token).toBeDefined();
     for (let i = 1; i <= 25; i++) {
       const taskRes = await makeRequest(
         'POST',
@@ -109,26 +148,22 @@ const runTests = async () => {
         },
         token
       );
+      expect(taskRes.statusCode).toBe(201);
       if (i === 1) sampleTaskId = taskRes.body.data._id;
     }
-    console.log(`✅ Seeded 25 tasks into MongoDB database.\n`);
+    expect(sampleTaskId).toBeDefined();
 
-    // Clear initial write invalidation residual cache
     flushCache();
     resetCacheMetrics();
+  });
 
-    // 5. Test Steps 5 & 6: Measure Cached vs Uncached GET /tasks
-    console.log(`========================================================================`);
-    console.log(`📊 EXPERIMENT: RECORDING API RESPONSE TIMES (CACHED vs UNCACHED)`);
-    console.log(`========================================================================`);
-
+  test('Step C: Measure Cached vs Uncached GET /tasks Performance', async () => {
     const cachedReadings = [];
     const uncachedReadings = [];
 
-    // --- CACHED REQUESTS ---
-    console.log(`\n🔹 Phase 1: Sending 3 GET /tasks requests with IN-MEMORY CACHING ENABLED...`);
     for (let i = 1; i <= 3; i++) {
       const res = await makeRequest('GET', '/tasks', null, token);
+      expect(res.statusCode).toBe(200);
       const cacheHeader = res.headers['x-cache'] || 'N/A';
       cachedReadings.push({
         request: `Request #${i}`,
@@ -136,13 +171,11 @@ const runTests = async () => {
         status: cacheHeader,
         itemsCount: res.body.count
       });
-      console.log(`   [Cached Request #${i}] Time: ${res.responseTimeMs.toFixed(2)} ms | X-Cache Header: ${cacheHeader}`);
     }
 
-    // --- UNCACHED REQUESTS (Bypassing Cache) ---
-    console.log(`\n🔹 Phase 2: Sending 3 GET /tasks requests with CACHING DISABLED (bypassCache=true)...`);
     for (let i = 1; i <= 3; i++) {
       const res = await makeRequest('GET', '/tasks?bypassCache=true', null, token);
+      expect(res.statusCode).toBe(200);
       const cacheHeader = res.headers['x-cache'] || 'N/A';
       uncachedReadings.push({
         request: `Request #${i}`,
@@ -150,17 +183,15 @@ const runTests = async () => {
         status: cacheHeader,
         itemsCount: res.body.count
       });
-      console.log(`   [Uncached Request #${i}] Time: ${res.responseTimeMs.toFixed(2)} ms | X-Cache Header: ${cacheHeader}`);
     }
 
-    // Print Lab Journal Comparative Table (Step 7)
     console.log(`\n========================================================================`);
-    console.log(`📋 LAB JOURNAL RESULTS TABLE (Step 7)`);
+    console.log(`📋 LAB JOURNAL RESULTS TABLE`);
     console.log(`========================================================================`);
-    console.log(`+-----------+-----------------------+-------------------------+---------------+|`);
+    console.log(`+-----------+-----------------------+-------------------------+---------------+`);
     console.log(`| Request   | Cached Time (ms)      | Uncached Time (ms)      | Performance   |`);
-    console.log(`+-----------+-----------------------+-------------------------+---------------+|`);
-    
+    console.log(`+-----------+-----------------------+-------------------------+---------------+`);
+
     let totalCached = 0;
     let totalUncached = 0;
 
@@ -183,81 +214,64 @@ const runTests = async () => {
     const avgUncached = (totalUncached / 3).toFixed(2);
     const overallSpeedup = (((avgUncached - avgCached) / avgUncached) * 100).toFixed(1);
 
-    console.log(`+-----------+-----------------------+-------------------------+---------------+|`);
+    console.log(`+-----------+-----------------------+-------------------------+---------------+`);
     console.log(`| AVERAGE   | ${avgCached.padEnd(7)} ms           | ${avgUncached.padEnd(7)} ms           | ${overallSpeedup}% faster   |`);
     console.log(`+-----------+-----------------------+-------------------------+---------------+|\n`);
+  });
 
-    // 6. Test Step 4: Cache Invalidation on Write Operations (POST, PUT, DELETE)
-    console.log(`--- Step C: Verifying Cache Invalidation Logic (Step 4) ---`);
-
-    // Ensure cache has 'HIT'
+  test('Step D: Verify Cache Invalidation on Write Operations (POST, PUT, DELETE)', async () => {
     await makeRequest('GET', '/tasks', null, token);
-    let checkCacheBefore = await makeRequest('GET', '/tasks', null, token);
-    console.log(`1. Cache Status before write: X-Cache = ${checkCacheBefore.headers['x-cache']}`);
+    const checkCacheBefore = await makeRequest('GET', '/tasks', null, token);
+    expect(checkCacheBefore.headers['x-cache']).toBe('HIT');
 
-    // POST write
     const postRes = await makeRequest(
       'POST',
       '/tasks',
       { title: 'Invalidation Trigger Task', description: 'Triggers cache del' },
       token
     );
-    console.log(`2. POST /tasks executed (Task Created). Response cacheInvalidated: ${postRes.body.cacheInvalidated}`);
+    expect(postRes.statusCode).toBe(201);
+    expect(postRes.body.cacheInvalidated).toBe(true);
+    createdTaskId = postRes.body.data._id;
 
-    // Check GET /tasks after POST
-    let checkCacheAfterPOST = await makeRequest('GET', '/tasks', null, token);
-    console.log(`3. Cache Status after POST: X-Cache = ${checkCacheAfterPOST.headers['x-cache']} (Expected: MISS because cache was invalidated)`);
+    const checkCacheAfterPOST = await makeRequest('GET', '/tasks', null, token);
+    expect(checkCacheAfterPOST.headers['x-cache']).toBe('MISS');
 
-    // PUT write
     const putRes = await makeRequest(
       'PUT',
       `/tasks/${sampleTaskId}`,
       { title: 'Updated Benchmark Task #1' },
       token
     );
-    console.log(`4. PUT /tasks/${sampleTaskId} executed. Response cacheInvalidated: ${putRes.body.cacheInvalidated}`);
+    expect(putRes.statusCode).toBe(200);
+    expect(putRes.body.cacheInvalidated).toBe(true);
 
-    let checkCacheAfterPUT = await makeRequest('GET', '/tasks', null, token);
-    console.log(`5. Cache Status after PUT: X-Cache = ${checkCacheAfterPUT.headers['x-cache']} (Expected: MISS)`);
+    const checkCacheAfterPUT = await makeRequest('GET', '/tasks', null, token);
+    expect(checkCacheAfterPUT.headers['x-cache']).toBe('MISS');
 
-    // DELETE write
     const delRes = await makeRequest('DELETE', `/tasks/${sampleTaskId}`, null, token);
-    console.log(`6. DELETE /tasks/${sampleTaskId} executed. Response cacheInvalidated: ${delRes.body.cacheInvalidated}`);
+    expect(delRes.statusCode).toBe(200);
+    expect(delRes.body.cacheInvalidated).toBe(true);
 
-    let checkCacheAfterDEL = await makeRequest('GET', '/tasks', null, token);
-    console.log(`7. Cache Status after DELETE: X-Cache = ${checkCacheAfterDEL.headers['x-cache']} (Expected: MISS)\n`);
+    const checkCacheAfterDEL = await makeRequest('GET', '/tasks', null, token);
+    expect(checkCacheAfterDEL.headers['x-cache']).toBe('MISS');
+  });
 
-    // 7. Test Supplementary Problem 1: Single-Task Endpoint Caching
-    console.log(`--- Step D: Single-Task Caching (GET /tasks/:id) ---`);
-    const newTaskId = postRes.body.data._id;
-    const single1 = await makeRequest('GET', `/tasks/${newTaskId}`, null, token);
-    console.log(`1. GET /tasks/${newTaskId} Request 1: X-Cache = ${single1.headers['x-cache']} (Expected: MISS)`);
+  test('Step E: Single-Task Caching (GET /tasks/:id)', async () => {
+    expect(createdTaskId).toBeDefined();
+    const single1 = await makeRequest('GET', `/tasks/${createdTaskId}`, null, token);
+    expect(single1.statusCode).toBe(200);
+    expect(single1.headers['x-cache']).toBe('MISS');
 
-    const single2 = await makeRequest('GET', `/tasks/${newTaskId}`, null, token);
-    console.log(`2. GET /tasks/${newTaskId} Request 2: X-Cache = ${single2.headers['x-cache']} (Expected: HIT)\n`);
+    const single2 = await makeRequest('GET', `/tasks/${createdTaskId}`, null, token);
+    expect(single2.statusCode).toBe(200);
+    expect(single2.headers['x-cache']).toBe('HIT');
+  });
 
-    // 8. Test Supplementary Problem 2: Debug Cache Stats Endpoint
-    console.log(`--- Step E: Cache Stats & Metrics Debug Endpoint ---`);
+  test('Step F: Debug Cache Stats Endpoint (GET /tasks/cache/stats)', async () => {
     const statsRes = await makeRequest('GET', '/tasks/cache/stats', null, token);
-    console.log(`📊 Cache Statistics Response:`);
-    console.log(`   - Total Requests: ${statsRes.body.cache.stats.totalRequests}`);
-    console.log(`   - Hits: ${statsRes.body.cache.stats.hits}`);
-    console.log(`   - Misses: ${statsRes.body.cache.stats.misses}`);
-    console.log(`   - Hit Rate: ${statsRes.body.cache.stats.hitRate}`);
-    console.log(`   - Active Keys Count: ${statsRes.body.cache.keysCount}\n`);
-
-    console.log(`========================================================================`);
-    console.log(`🎉 ALL PRACTICAL 9 TESTS & VERIFICATIONS COMPLETED SUCCESSFULLY!`);
-    console.log(`========================================================================\n`);
-
-  } catch (err) {
-    console.error(`❌ Test Error:`, err);
-    process.exitCode = 1;
-  } finally {
-    if (server) server.close();
-    if (mongoServer) await mongoServer.stop();
-    await mongoose.disconnect();
-  }
-};
-
-runTests();
+    expect(statsRes.statusCode).toBe(200);
+    expect(statsRes.body.cache).toBeDefined();
+    expect(statsRes.body.cache.stats).toBeDefined();
+  });
+});
