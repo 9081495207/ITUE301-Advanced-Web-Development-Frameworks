@@ -173,3 +173,24 @@ export const deleteTask = async (id) => {
   }
   return data;
 };
+
+/**
+ * Practical 13: AI API Integration
+ * Calls the backend /api/ai/generate-description endpoint.
+ * The OpenAI API key is NEVER sent from the frontend — it is used server-side only.
+ *
+ * @param {string} title - Task title to generate a description for
+ * @returns {{ description: string, fallback: boolean, fallbackReason?: string }}
+ */
+export const generateDescription = async (title) => {
+  const res = await fetchApi('/api/ai/generate-description', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title })
+  });
+  const data = await res.json();
+  if (!res.ok && res.status !== 429) {
+    throw new Error(data.message || 'Failed to generate description');
+  }
+  return data; // { description, fallback, fallbackReason? }
+};

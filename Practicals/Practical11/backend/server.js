@@ -6,6 +6,7 @@ const { connectDB } = require('./src/config/db');
 const { initTaskListeners } = require('./src/events/taskListeners');
 const authRoutes = require('./src/routes/authRoutes');
 const taskRoutes = require('./src/routes/taskRoutes');
+const aiRoutes = require('./src/routes/aiRoutes');   // Practical 13: AI Integration
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +33,7 @@ app.use(express.json());
 // 4. Mount API Routes
 app.use('/auth', authRoutes);
 app.use('/tasks', taskRoutes);
+app.use('/api/ai', aiRoutes);  // Practical 13: AI endpoint (key is server-side only)
 
 // 5. Root Endpoint & Practical Summary
 app.get('/', (req, res) => {

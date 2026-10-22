@@ -9,7 +9,8 @@ import {
   loginUser,
   registerUser,
   getMe,
-  logoutUser
+  logoutUser,
+  generateDescription   // Practical 13: AI API Integration
 } from '../services/api';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -61,6 +62,11 @@ function TaskManager() {
     taskId: null,
     taskTitle: ''
   });
+
+  // ── Practical 13: AI Integration State ───────────────────────────────────
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiDisclaimer, setAiDisclaimer] = useState(false);
+  // ─────────────────────────────────────────────────────────────────────────
 
   // Toast notification helper
   const showToast = (message, type = 'success') => {
@@ -284,7 +290,37 @@ function TaskManager() {
     setDescription('');
     setPriority('medium');
     setCompleted(false);
+    setAiDisclaimer(false);
   };
+
+  // ── Practical 13: Generate AI Description ──────────────────────────────────
+  const handleGenerateDescription = async () => {
+    if (!title.trim()) {
+      showToast('Please enter a task title first before generating a description.', 'error');
+      return;
+    }
+    setAiLoading(true);
+    setAiDisclaimer(false);
+    try {
+      const result = await generateDescription(title.trim());
+      if (result.fallback) {
+        // Graceful degradation — AI unavailable, app keeps working
+        showToast(
+          result.fallbackReason || 'AI service unavailable. You can type a description manually.',
+          'error'
+        );
+      } else {
+        setDescription(result.description);
+        setAiDisclaimer(true); // Show disclaimer: content is AI-generated
+        showToast('✨ AI description generated! Feel free to edit it.', 'success');
+      }
+    } catch (err) {
+      showToast(`AI generation failed: ${err.message}`, 'error');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+  // ─────────────────────────────────────────────────────────────────────────
 
   // Computed Task Analytics
   const stats = useMemo(() => {
@@ -563,15 +599,74 @@ function TaskManager() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="description">Description</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label htmlFor="description" style={{ margin: 0 }}>Description</label>
+                  {/* ✨ Practical 13: AI Generate Description Button */}
+                  <button
+                    type="button"
+                    id="ai-generate-btn"
+                    onClick={handleGenerateDescription}
+                    disabled={aiLoading || !title.trim()}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '4px 12px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      borderRadius: '20px',
+                      border: '1px solid rgba(139,92,246,0.5)',
+                      background: aiLoading
+                        ? 'rgba(139,92,246,0.08)'
+                        : 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.1))',
+                      color: '#a78bfa',
+                      cursor: aiLoading || !title.trim() ? 'not-allowed' : 'pointer',
+                      opacity: !title.trim() ? 0.5 : 1,
+                      transition: 'all 0.2s ease'
+                    }}
+                    title={!title.trim() ? 'Enter a task title first' : 'Generate AI description (GPT-4o-mini)'}
+                  >
+                    {aiLoading ? (
+                      <>
+                        <span style={{
+                          display: 'inline-block',
+                          width: '10px',
+                          height: '10px',
+                          border: '2px solid #a78bfa',
+                          borderTopColor: 'transparent',
+                          borderRadius: '50%',
+                          animation: 'spin 0.8s linear infinite'
+                        }} />
+                        Generating...
+                      </>
+                    ) : '✨ AI Generate'}
+                  </button>
+                </div>
                 <textarea
                   id="description"
                   rows="3"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Add optional notes, specifications, or details..."
+                  onChange={(e) => { setDescription(e.target.value); setAiDisclaimer(false); }}
+                  placeholder="Add optional notes, or click ✨ AI Generate above..."
                   className="username-input"
-                ></textarea>
+                />
+                {/* AI Disclaimer — shown when description was AI-generated */}
+                {aiDisclaimer && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    marginTop: '6px',
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    background: 'rgba(139,92,246,0.08)',
+                    border: '1px solid rgba(139,92,246,0.2)',
+                    fontSize: '11px',
+                    color: '#a78bfa'
+                  }}>
+                    🤖 <strong>AI-generated suggestion</strong> — please review and edit before saving.
+                  </div>
+                )}
               </div>
 
               <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px', margin: '4px 0' }}>
