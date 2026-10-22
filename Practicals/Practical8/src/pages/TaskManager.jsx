@@ -81,8 +81,11 @@ function TaskManager() {
 
     try {
       const response = await getMe();
-      setCurrentUser(response.user);
-      fetchTasksData();
+      const user = response?.data || response?.user;
+      if (user) {
+        setCurrentUser(user);
+        fetchTasksData();
+      }
     } catch (err) {
       setCurrentUser(null);
       logoutUser();
@@ -128,15 +131,17 @@ function TaskManager() {
           email: authEmail,
           password: authPassword
         });
-        setCurrentUser(response.user);
-        showToast(`Registration successful! Welcome ${response.user.name}.`, 'success');
+        const user = response?.data || response?.user || { name: authName };
+        setCurrentUser(user);
+        showToast(`Registration successful! Welcome ${user?.name || authName}.`, 'success');
       } else {
         const response = await loginUser({
           email: authEmail,
           password: authPassword
         });
-        setCurrentUser(response.user);
-        showToast(`Login successful! Welcome back ${response.user.name}.`, 'success');
+        const user = response?.data || response?.user || { email: authEmail };
+        setCurrentUser(user);
+        showToast(`Login successful! Welcome back ${user?.name || authEmail}.`, 'success');
       }
       setAuthPassword('');
       fetchTasksData();
@@ -166,7 +171,8 @@ function TaskManager() {
         password: 'Password123!'
       });
 
-      setCurrentUser(response.user);
+      const user = response?.data || response?.user || { name: 'Jainam (Demo User)', email: 'jainam.demo@example.com' };
+      setCurrentUser(user);
       showToast('Logged in as Demo User with JWT Token!', 'success');
       fetchTasksData();
     } catch (err) {
